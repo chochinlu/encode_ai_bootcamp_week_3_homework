@@ -3,6 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useChat } from "ai/react";
 import { marked } from 'marked';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Chat() {
   const { messages, append, isLoading } = useChat();
@@ -25,6 +32,7 @@ export default function Chat() {
     genre: "",
     tone: "",
   });
+  const [language, setLanguage] = useState("English");
 
   const handleChange = ({
     target: { name, value },
@@ -49,6 +57,16 @@ export default function Chat() {
               Customize the story by selecting the genre and tone.
             </p>
           </div>
+
+          <Select onValueChange={setLanguage} defaultValue="English">
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="選擇語言" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="English">English</SelectItem>
+              <SelectItem value="繁體中文">繁體中文</SelectItem>
+            </SelectContent>
+          </Select>
 
           <div className="space-y-4 bg-opacity-25 bg-gray-700 rounded-lg p-4">
             <h3 className="text-xl font-semibold">Genre</h3>
@@ -104,7 +122,7 @@ export default function Chat() {
             onClick={() =>
               append({
                 role: "user",
-                content: `Generate a ${state.genre} story in a ${state.tone} tone`,
+                content: `Generate a ${state.genre} story in a ${state.tone} tone in ${language}`,
               })
             }
           >

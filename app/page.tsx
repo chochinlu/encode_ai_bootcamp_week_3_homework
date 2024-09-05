@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useChat } from "ai/react";
 import { marked } from 'marked';
 
 export default function Chat() {
   const { messages, append, isLoading } = useChat();
+  const messageEndRef = useRef<HTMLDivElement>(null);
 
   const genres = [
     { emoji: "🧙", value: "Fantasy" },
@@ -34,6 +35,9 @@ export default function Chat() {
     });
   };
 
+  useEffect(() => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <main className="mx-auto w-full p-24 flex flex-col">
@@ -115,6 +119,7 @@ export default function Chat() {
             className="bg-opacity-25 bg-gray-700 rounded-lg p-4"
           >
             <div dangerouslySetInnerHTML={{ __html: marked.parse(messages[messages.length - 1]?.content || '') }} />
+            <div ref={messageEndRef} />
           </div>
         </div>
       </div>

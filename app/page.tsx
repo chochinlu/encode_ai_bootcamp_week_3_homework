@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useChat } from "ai/react";
+import { marked } from 'marked';
 
 export default function Chat() {
   const { messages, append, isLoading } = useChat();
@@ -113,7 +114,7 @@ export default function Chat() {
             }
             className="bg-opacity-25 bg-gray-700 rounded-lg p-4"
           >
-            {messages[messages.length - 1]?.content}
+            <div dangerouslySetInnerHTML={{ __html: marked.parse(messages[messages.length - 1]?.content || '') }} />
           </div>
         </div>
       </div>

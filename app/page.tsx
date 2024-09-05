@@ -138,6 +138,15 @@ export default function Chat() {
           >
             <div dangerouslySetInnerHTML={{ __html: marked.parse(messages[messages.length - 1]?.content || '') }} />
             <div ref={messageEndRef} />
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="mt-4 bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded"
+              >
+                Back To Top
+              </button>
+            </div>
           </div>
         </div>
       </div>

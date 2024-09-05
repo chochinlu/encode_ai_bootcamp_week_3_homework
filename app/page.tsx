@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 
 export default function Chat() {
-  const { messages, append, isLoading } = useChat();
+  const { messages, append, isLoading, stop } = useChat();
   const messageEndRef = useRef<HTMLDivElement>(null);
 
   const genres = [
@@ -116,18 +116,28 @@ export default function Chat() {
             </div>
           </div>
 
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-            disabled={isLoading || !state.genre || !state.tone}
-            onClick={() =>
-              append({
-                role: "user",
-                content: `Generate a ${state.genre} story in a ${state.tone} tone in ${language}`,
-              })
-            }
-          >
-            Generate Story
-          </button>
+          <div className="flex justify-center space-x-4">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+              disabled={isLoading || !state.genre || !state.tone}
+              onClick={() => {
+                append({
+                  role: 'user',
+                  content: `Generate a ${state.genre} story with a ${state.tone} tone in ${language}.`
+                });
+              }}
+            >
+              Generate Story
+            </button>
+
+            <button
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+              disabled={messages.length === 0 || messages[messages.length - 1]?.content.startsWith("Generate")}
+              onClick={stop}
+            >
+              Stop Generation
+            </button>
+          </div>
 
           <div
             hidden={

@@ -144,7 +144,7 @@ export default function Chat() {
               messages.length === 0 ||
               messages[messages.length - 1]?.content.startsWith("Generate")
             }
-            className="bg-opacity-25 bg-gray-700 rounded-lg p-4"
+            className="bg-opacity-25 bg-gray-700 rounded-lg p-4 max-w-[1024px] w-full mx-auto"
           >
             <div dangerouslySetInnerHTML={{ __html: marked.parse(messages[messages.length - 1]?.content || '') }} />
             <div ref={messageEndRef} />

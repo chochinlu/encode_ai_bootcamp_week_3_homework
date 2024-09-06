@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useChat } from "ai/react";
 import { marked } from 'marked';
 import {
@@ -60,7 +60,6 @@ export default function Chat() {
     }
   }, [characterMessages]);
 
-
   const generateCharacters = async () => {
     try {
       await appendCharacter({
@@ -80,6 +79,47 @@ export default function Chat() {
     setIsEditing(false);
     // Add save logic here if needed
   };
+
+  // Add a new state to store the generated story
+  const [generatedStory, setGeneratedStory] = useState("");
+
+  // Add a new state to store the character summary
+  const [characterSummary, setCharacterSummary] = useState("");
+
+  // Modify the useEffect to update the generatedStory state
+  useEffect(() => {
+    if (storyMessages.length > 0) {
+      setGeneratedStory(storyMessages[storyMessages.length - 1].content);
+    }
+  }, [storyMessages]);
+
+  // Add a function to handle character summary generation
+  const handleCharacterSummary = async () => {
+    try {
+      const response = await fetch("/api/character-summary", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ story: generatedStory }),
+      });
+      const data = await response.json();
+      setCharacterSummary(data.summary);
+    } catch (error) {
+      console.error("Error generating character summary:", error);
+    }
+  };
+
+  const [isGenerating, setIsGenerating] = useState(false);
+  const abortController = useRef<AbortController | null>(null);
+
+  // 定義 stop 函數
+  const stop = useCallback(() => {
+    if (abortController.current) {
+      abortController.current.abort();
+      setIsGenerating(false);
+    }
+  }, []);
 
   return (
     <main className="mx-auto w-full p-24 flex flex-col">
@@ -223,7 +263,7 @@ export default function Chat() {
 
             <button
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-              disabled={storyMessages.length === 0 || storyMessages[storyMessages.length - 1]?.content.startsWith("Generate")}
+              disabled={!isGenerating}
               onClick={stop}
             >
               Stop Generation
@@ -237,17 +277,31 @@ export default function Chat() {
             }
             className="bg-opacity-25 bg-gray-700 rounded-lg p-4 max-w-[1024px] w-full mx-auto"
           >
-            <div dangerouslySetInnerHTML={{ __html: marked.parse(storyMessages[storyMessages.length - 1]?.content || '') }} />
+            <div dangerouslySetInnerHTML={{ __html: marked.parse(generatedStory || '') }} />
             <div ref={messageEndRef} />
 
-            <div className="flex justify-end">
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={handleCharacterSummary}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Character Summary
+              </button>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="mt-4 bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded"
+                className="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded"
               >
                 Back To Top
               </button>
             </div>
+
+            {/* Display character summary if available */}
+            {characterSummary && (
+              <div className="mt-4 p-4 bg-opacity-25 bg-gray-600 rounded-lg">
+                <h4 className="text-lg font-semibold mb-2">Character Summary:</h4>
+                <div dangerouslySetInnerHTML={{ __html: marked.parse(characterSummary) }} />
+              </div>
+            )}
           </div>
         </div>
       </div>

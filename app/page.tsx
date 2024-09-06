@@ -10,13 +10,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Chat() {
   const { messages: storyMessages, append: appendStory, isLoading: isLoadingStory } = useChat();
   const { messages: characterMessages, append: appendCharacter, isLoading: isLoadingCharacter } = useChat({ api: "/api/generate-characters" });
 
   const [characterCount, setCharacterCount] = useState("3");
-  const [characters, setCharacters] = useState([]);
+  const [charactersText, setCharactersText] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   const genres = [
     { emoji: "🧙", value: "Fantasy" },
@@ -52,6 +54,13 @@ export default function Chat() {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [storyMessages]);
 
+  useEffect(() => {
+    if (characterMessages.length > 0) {
+      setCharactersText(characterMessages[characterMessages.length - 1].content);
+    }
+  }, [characterMessages]);
+
+
   const generateCharacters = async () => {
     try {
       await appendCharacter({
@@ -61,6 +70,15 @@ export default function Chat() {
     } catch (error) {
       console.error("Error generating characters:", error);
     }
+  };
+
+  const handleEditCharacters = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveCharacters = () => {
+    setIsEditing(false);
+    // Add save logic here if needed
   };
 
   return (
@@ -76,7 +94,7 @@ export default function Chat() {
 
           <Select onValueChange={setLanguage} defaultValue="English">
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="選擇語言" />
+              <SelectValue placeholder="choose language" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="English">English</SelectItem>
@@ -108,9 +126,34 @@ export default function Chat() {
             {characterMessages.length > 0 && (
               <div className="mt-4">
                 <h4 className="text-lg font-semibold">Generated Characters:</h4>
-                <div className="whitespace-pre-wrap">
-                  {characterMessages[characterMessages.length - 1].content}
-                </div>
+                {isEditing ? (
+                  <>
+                    <Textarea
+                      className="w-full h-64 max-w-[1024px] mx-auto"
+                      value={charactersText}
+                      onChange={(e) => setCharactersText(e.target.value)}
+                      placeholder="edit characters"
+                    />
+                    <button
+                      className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                      onClick={handleSaveCharacters}
+                    >
+                      Save Changes
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="whitespace-pre-wrap max-w-[1024px] w-full mx-auto">
+                      {charactersText || "No characters generated yet."}
+                    </div>
+                    <button
+                      className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                      onClick={handleEditCharacters}
+                    >
+                      Edit Characters
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -171,7 +214,7 @@ export default function Chat() {
               onClick={() => {
                 appendStory({
                   role: 'user',
-                  content: `Generate a ${state.genre} story with a ${state.tone} tone in ${language}.`
+                  content: `Generate a ${state.genre} story with a ${state.tone} tone in ${language}, featuring the following characters:\n${charactersText}`
                 });
               }}
             >

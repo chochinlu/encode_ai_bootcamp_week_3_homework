@@ -12,8 +12,11 @@ import {
 } from "@/components/ui/select";
 
 export default function Chat() {
-  const { messages, append, isLoading, stop } = useChat();
-  const messageEndRef = useRef<HTMLDivElement>(null);
+  const { messages: storyMessages, append: appendStory, isLoading: isLoadingStory } = useChat();
+  const { messages: characterMessages, append: appendCharacter, isLoading: isLoadingCharacter } = useChat({ api: "/api/generate-characters" });
+
+  const [characterCount, setCharacterCount] = useState("3");
+  const [characters, setCharacters] = useState([]);
 
   const genres = [
     { emoji: "🧙", value: "Fantasy" },
@@ -43,9 +46,22 @@ export default function Chat() {
     });
   };
 
+  const messageEndRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [storyMessages]);
+
+  const generateCharacters = async () => {
+    try {
+      await appendCharacter({
+        role: 'user',
+        content: `Generate ${characterCount} characters with name, description, and personality in ${language}.`
+      });
+    } catch (error) {
+      console.error("Error generating characters:", error);
+    }
+  };
 
   return (
     <main className="mx-auto w-full p-24 flex flex-col">
@@ -67,6 +83,38 @@ export default function Chat() {
               <SelectItem value="繁體中文">繁體中文</SelectItem>
             </SelectContent>
           </Select>
+
+          <div className="space-y-4 bg-opacity-25 bg-gray-700 rounded-lg p-4">
+            <h3 className="text-xl font-semibold">Generate Characters</h3>
+            <div className="flex items-center space-x-4">
+              <Select value={characterCount} onValueChange={setCharacterCount}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="character count" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 character</SelectItem>
+                  <SelectItem value="2">2 characters</SelectItem>
+                  <SelectItem value="3">3 characters</SelectItem>
+                </SelectContent>
+              </Select>
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50"
+                onClick={generateCharacters}
+                disabled={isLoadingCharacter}
+              >
+                {isLoadingCharacter ? "Generating..." : "Generate Characters"}
+              </button>
+            </div>
+            {characterMessages.length > 0 && (
+              <div className="mt-4">
+                <h4 className="text-lg font-semibold">Generated Characters:</h4>
+                <div className="whitespace-pre-wrap">
+                  {characterMessages[characterMessages.length - 1].content}
+                </div>
+              </div>
+            )}
+          </div>
+
 
           <div className="space-y-4 bg-opacity-25 bg-gray-700 rounded-lg p-4">
             <h3 className="text-xl font-semibold">Genre</h3>
@@ -119,9 +167,9 @@ export default function Chat() {
           <div className="flex justify-center space-x-4">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-              disabled={isLoading || !state.genre || !state.tone}
+              disabled={isLoadingStory || !state.genre || !state.tone}
               onClick={() => {
-                append({
+                appendStory({
                   role: 'user',
                   content: `Generate a ${state.genre} story with a ${state.tone} tone in ${language}.`
                 });
@@ -132,7 +180,7 @@ export default function Chat() {
 
             <button
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-              disabled={messages.length === 0 || messages[messages.length - 1]?.content.startsWith("Generate")}
+              disabled={storyMessages.length === 0 || storyMessages[storyMessages.length - 1]?.content.startsWith("Generate")}
               onClick={stop}
             >
               Stop Generation
@@ -141,12 +189,12 @@ export default function Chat() {
 
           <div
             hidden={
-              messages.length === 0 ||
-              messages[messages.length - 1]?.content.startsWith("Generate")
+              storyMessages.length === 0 ||
+              storyMessages[storyMessages.length - 1]?.content.startsWith("Generate")
             }
             className="bg-opacity-25 bg-gray-700 rounded-lg p-4 max-w-[1024px] w-full mx-auto"
           >
-            <div dangerouslySetInnerHTML={{ __html: marked.parse(messages[messages.length - 1]?.content || '') }} />
+            <div dangerouslySetInnerHTML={{ __html: marked.parse(storyMessages[storyMessages.length - 1]?.content || '') }} />
             <div ref={messageEndRef} />
 
             <div className="flex justify-end">

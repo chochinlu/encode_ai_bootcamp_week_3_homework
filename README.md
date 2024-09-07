@@ -1,6 +1,21 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Story Teller
+
+Story Teller is an interactive web application that generates customized stories based on user-defined characters, genres, and tones. It leverages AI to create unique narratives and character summaries.
+
+## Features
+
+1. **Character Generation**: Create 1-3 characters with names, descriptions, and personalities.
+2. **Character Editing**: Modify generated characters to suit your preferences.
+3. **Story Customization**:
+   - Choose from various genres (Fantasy, Mystery, Romance, Sci-Fi)
+   - Select different tones (Happy, Sad, Sarcastic, Funny)
+4. **Language Selection**: Generate stories and summaries in English or Traditional Chinese.
+5. **Story Generation**: Create unique stories based on your characters, chosen genre, and tone.
+6. **Character Summary**: Get an AI-generated summary of how characters appear and develop in the story.
 
 ## Getting Started
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 First, run the development server:
 

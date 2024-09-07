@@ -49,10 +49,18 @@ export default function Chat() {
   };
 
   const messageEndRef = useRef<HTMLDivElement>(null);
+  const summaryEndRef = useRef<HTMLDivElement>(null);
+  const characterSummaryEndRef = useRef<HTMLDivElement>(null);
+
+  const { messages: summaryMessages, append: appendSummary, setMessages: setSummaryMessages, isLoading: isGeneratingSummary } = useChat({ api: "/api/character-summary" });
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [storyMessages]);
+
+  useEffect(() => {
+    summaryEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [summaryMessages]);
 
   useEffect(() => {
     if (characterMessages.length > 0) {
@@ -93,10 +101,6 @@ export default function Chat() {
     }
   }, [storyMessages]);
 
-  // Use useChat hook for character summary
-  const { messages: summaryMessages, append: appendSummary, setMessages: setSummaryMessages, isLoading: isGeneratingSummary } = useChat({ api: "/api/character-summary" });
-
-  // Update handleCharacterSummary function
   const handleCharacterSummary = async () => {
     if (charactersText && generatedStory) {
       // Clear previous summary messages
@@ -297,11 +301,14 @@ export default function Chat() {
 
             {/* Display character summary */}
             {summaryMessages.length > 0 && (
-              <div className="mt-4 p-4 bg-opacity-25 bg-gray-600 rounded-lg">
+              <div className="mt-4 p-4 bg-opacity-25 bg-gray-600 rounded-lg max-h-[500px] overflow-y-auto">
                 <h4 className="text-lg font-semibold mb-2">Generated Characters Summary:</h4>
                 {summaryMessages.slice(1).map((message, index) => (
                   <div key={index} dangerouslySetInnerHTML={{ __html: marked.parse(message.content) }} />
                 ))}
+                <div ref={characterSummaryEndRef} />
+
+                {/* Only show Back To Top button when summary is generated */}
                 <div className="flex justify-end mt-4">
                   <button
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

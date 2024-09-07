@@ -302,6 +302,14 @@ export default function Chat() {
                 {summaryMessages.slice(1).map((message, index) => (
                   <div key={index} dangerouslySetInnerHTML={{ __html: marked.parse(message.content) }} />
                 ))}
+                <div className="flex justify-end mt-4">
+                  <button
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Back To Top
+                  </button>
+                </div>
               </div>
             )}
           </div>

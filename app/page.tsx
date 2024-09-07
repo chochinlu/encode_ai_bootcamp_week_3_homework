@@ -85,7 +85,6 @@ export default function Chat() {
 
   const handleSaveCharacters = () => {
     setIsEditing(false);
-    // Add save logic here if needed
   };
 
   // Add a new state to store the generated story
@@ -110,6 +109,11 @@ export default function Chat() {
         role: 'user',
         content: `Characters:\n${charactersText}\n\nStory:\n${generatedStory}`
       });
+
+      // Add this: Scroll to the end after generating summary
+      setTimeout(() => {
+        characterSummaryEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     }
   };
 

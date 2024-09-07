@@ -10,9 +10,10 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
     const lastMessage = messages[messages.length - 1];
-    const [charactersSection, storySection] = lastMessage.content.split('\n\n');
+    const [charactersSection, storySection, languageSection] = lastMessage.content.split('\n\n');
     const characters = charactersSection.replace('Characters:\n', '');
     const story = storySection.replace('Story:\n', '');
+    const language = languageSection.replace('Language:\n', '');
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -32,7 +33,12 @@ ${characters}
 Story:
 ${story}
 
-Summarize each character's role, development, and key actions in the story. Ensure that every character from the original list is included in your summary, even if their role seems minor. If a character is not mentioned in the story, state this fact. Provide the summary in a clear, concise format, with each character's summary clearly separated.`,
+Language:
+${language}
+
+Summarize each character's role, development, and key actions in the story. Ensure that every character from the original list is included in your summary, even if their role seems minor. If a character is not mentioned in the story, state this fact. Provide the summary in a clear, concise format, with each character's summary clearly separated.
+
+Please respond in ${language}.`,
         },
       ],
     });

@@ -107,10 +107,10 @@ export default function Chat() {
 
       await appendSummary({
         role: 'user',
-        content: `Characters:\n${charactersText}\n\nStory:\n${generatedStory}`
+        content: `Characters:\n${charactersText}\n\nStory:\n${generatedStory}\n\nLanguage:\n${language}`
       });
 
-      // Add this: Scroll to the end after generating summary
+      // Scroll to the end after generating summary
       setTimeout(() => {
         characterSummaryEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);

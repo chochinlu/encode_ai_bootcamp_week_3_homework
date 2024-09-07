@@ -98,10 +98,10 @@ export default function Chat() {
 
   // Update handleCharacterSummary function
   const handleCharacterSummary = async () => {
-    if (charactersText) {
+    if (charactersText && generatedStory) {
       await appendSummary({
         role: 'user',
-        content: `Please summarize the characters from ${charactersText} in the following story:\n${generatedStory}`
+        content: `Characters:\n${charactersText}\n\nStory:\n${generatedStory}`
       });
     }
   };
@@ -282,7 +282,7 @@ export default function Chat() {
                 className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
                 disabled={!charactersText || isGeneratingSummary}
               >
-                {isGeneratingSummary ? "Summarizing..." : "Character Summary"}
+                {isGeneratingSummary ? "Summarizing..." : "Summarize Generated Characters"}
               </button>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -295,7 +295,7 @@ export default function Chat() {
             {/* Display character summary */}
             {summaryMessages.length > 0 && (
               <div className="mt-4 p-4 bg-opacity-25 bg-gray-600 rounded-lg">
-                <h4 className="text-lg font-semibold mb-2">Character Summary:</h4>
+                <h4 className="text-lg font-semibold mb-2">Generated Characters Summary:</h4>
                 {summaryMessages.slice(1).map((message, index) => (
                   <div key={index} dangerouslySetInnerHTML={{ __html: marked.parse(message.content) }} />
                 ))}

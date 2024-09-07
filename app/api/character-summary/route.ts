@@ -10,7 +10,13 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
     const lastMessage = messages[messages.length - 1];
-    const story = lastMessage.content.split('\n')[1]; // Get the story content
+    const [characters, story] = lastMessage.content.split('\n').slice(1);
+
+    console.log('----------------------------------');
+    console.log(characters);
+    console.log('----------------------------------');
+    console.log(story);
+    console.log('----------------------------------');
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -18,11 +24,19 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "system",
-          content: "You are a professional character analysis assistant, responsible for summarizing the main characters in stories.",
+          content: "You are a professional character analysis assistant, responsible for summarizing the specified characters as they appear in the given story.",
         },
         {
           role: "user",
-          content: `Please provide a brief summary of the characters in the following story:\n\n${story}`,
+          content: `Please provide a brief summary of how the following characters appear and develop in the given story. Only focus on these specific characters:
+
+Characters:
+${characters}
+
+Story:
+${story}
+
+Summarize each character's role, development, and key actions in the story. Do not include characters that are not in the original character list.`,
         },
       ],
     });

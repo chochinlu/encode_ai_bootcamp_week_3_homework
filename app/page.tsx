@@ -98,10 +98,10 @@ export default function Chat() {
 
   // Update handleCharacterSummary function
   const handleCharacterSummary = async () => {
-    if (generatedStory) {
+    if (charactersText) {
       await appendSummary({
         role: 'user',
-        content: `Generate a character summary for the following story:\n${generatedStory}`
+        content: `Please summarize the characters from ${charactersText} in the following story:\n${generatedStory}`
       });
     }
   };
@@ -279,9 +279,10 @@ export default function Chat() {
             <div className="flex justify-between mt-4">
               <button
                 onClick={handleCharacterSummary}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+                disabled={!charactersText || isGeneratingSummary}
               >
-                Character Summary
+                {isGeneratingSummary ? "Summarizing..." : "Character Summary"}
               </button>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

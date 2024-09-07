@@ -93,27 +93,23 @@ export default function Chat() {
     }
   }, [storyMessages]);
 
-  // Add a function to handle character summary generation
+  // Use useChat hook for character summary
+  const { messages: summaryMessages, append: appendSummary, isLoading: isGeneratingSummary } = useChat({ api: "/api/character-summary" });
+
+  // Update handleCharacterSummary function
   const handleCharacterSummary = async () => {
-    try {
-      const response = await fetch("/api/character-summary", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ story: generatedStory }),
+    if (generatedStory) {
+      await appendSummary({
+        role: 'user',
+        content: `Generate a character summary for the following story:\n${generatedStory}`
       });
-      const data = await response.json();
-      setCharacterSummary(data.summary);
-    } catch (error) {
-      console.error("Error generating character summary:", error);
     }
   };
 
   const [isGenerating, setIsGenerating] = useState(false);
   const abortController = useRef<AbortController | null>(null);
 
-  // 定義 stop 函數
+  // Define stop function
   const stop = useCallback(() => {
     if (abortController.current) {
       abortController.current.abort();
@@ -295,11 +291,13 @@ export default function Chat() {
               </button>
             </div>
 
-            {/* Display character summary if available */}
-            {characterSummary && (
+            {/* Display character summary */}
+            {summaryMessages.length > 0 && (
               <div className="mt-4 p-4 bg-opacity-25 bg-gray-600 rounded-lg">
                 <h4 className="text-lg font-semibold mb-2">Character Summary:</h4>
-                <div dangerouslySetInnerHTML={{ __html: marked.parse(characterSummary) }} />
+                {summaryMessages.slice(1).map((message, index) => (
+                  <div key={index} dangerouslySetInnerHTML={{ __html: marked.parse(message.content) }} />
+                ))}
               </div>
             )}
           </div>

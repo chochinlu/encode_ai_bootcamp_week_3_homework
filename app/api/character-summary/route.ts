@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { OpenAIStream, StreamingTextResponse } from 'ai';
 
 const openai = new OpenAI({
   baseURL: 'http://127.0.0.1:5000/v1',
@@ -7,26 +8,27 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    const { story } = await req.json();
+    const { messages } = await req.json();
+    const lastMessage = messages[messages.length - 1];
+    const story = lastMessage.content.split('\n')[1]; // Get the story content
 
-    const completion = await openai.chat.completions.create({
+    const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
+      stream: true,
       messages: [
         {
           role: "system",
-          content: "You are a helpful assistant that summarizes characters from stories.",
+          content: "You are a professional character analysis assistant, responsible for summarizing the main characters in stories.",
         },
         {
           role: "user",
-          content: `Please provide a brief summary of the main characters in the following story:\n\n${story}`,
+          content: `Please provide a brief summary of the characters in the following story:\n\n${story}`,
         },
       ],
     });
 
-    const summary = completion.choices[0].message.content;
-    console.log('Summary generated:', summary);
-
-    return NextResponse.json({ summary });
+    const stream = OpenAIStream(response);
+    return new StreamingTextResponse(stream);
   } catch (error) {
     console.error('Error in character summary generation:', error);
     return NextResponse.json({ error: 'Failed to generate character summary' }, { status: 500 });

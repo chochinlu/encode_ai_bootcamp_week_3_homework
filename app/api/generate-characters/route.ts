@@ -10,7 +10,6 @@ export const runtime = 'edge'
 export async function POST(req: Request) {
   const { messages } = await req.json()
 
-  console.log(messages)
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     stream: true,

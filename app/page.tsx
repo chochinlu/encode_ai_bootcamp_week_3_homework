@@ -94,11 +94,14 @@ export default function Chat() {
   }, [storyMessages]);
 
   // Use useChat hook for character summary
-  const { messages: summaryMessages, append: appendSummary, isLoading: isGeneratingSummary } = useChat({ api: "/api/character-summary" });
+  const { messages: summaryMessages, append: appendSummary, setMessages: setSummaryMessages, isLoading: isGeneratingSummary } = useChat({ api: "/api/character-summary" });
 
   // Update handleCharacterSummary function
   const handleCharacterSummary = async () => {
     if (charactersText && generatedStory) {
+      // Clear previous summary messages
+      setSummaryMessages([]);
+
       await appendSummary({
         role: 'user',
         content: `Characters:\n${charactersText}\n\nStory:\n${generatedStory}`

@@ -259,6 +259,9 @@ export default function Chat() {
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
               disabled={isLoadingStory || !state.genre || !state.tone}
               onClick={() => {
+                // Clear previous summary messages
+                setSummaryMessages([]);
+
                 appendStory({
                   role: 'user',
                   content: `Generate a ${state.genre} story with a ${state.tone} tone in ${language}, featuring the following characters:\n${charactersText}`

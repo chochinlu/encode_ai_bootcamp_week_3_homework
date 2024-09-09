@@ -15,7 +15,33 @@ Story Teller is an interactive web application that generates customized stories
 
 ## Getting Started
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+### Prerequisites
+
+Before starting the web UI, you need to set up and run the text-generation-webui backend:
+
+1. Clone the text-generation-webui repository:
+   ```
+   git clone https://github.com/oobabooga/text-generation-webui.git
+   cd text-generation-webui
+   ```
+
+2. Install the requirements according to the instructions in the [text-generation-webui README](https://github.com/oobabooga/text-generation-webui).
+
+3. Run the `start_linux.sh`, `start_windows.bat`, `start_macos.sh`, or `start_wsl.bat` script depending on your OS.
+Select your GPU vendor when asked.
+Once the installation ends, browse to http://localhost:7860
+
+4. Download a model using the provided script or manually place it in the `models` folder.
+
+5. In the web interface:
+   - Load your desired model
+   - Ensure the OpenAI API is enabled in the 'Session' tab
+
+6. Once the model is loaded and the API is running, you can proceed to start the Story Teller web UI.
+
+### Running the Web UI
 
 First, run the development server:
 
